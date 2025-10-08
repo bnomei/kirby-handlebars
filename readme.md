@@ -220,14 +220,14 @@ echo $string;
 
 ## Settings
 
-| bnomei.handlebars.        | Default        | Description               |            
-|---------------------------|----------------|---------------------------|
-| component | `true` | if `false` no templating will be handled by this plugin and you need to use the `hbs()`/`handlebars()` functions. |
-| dir-templates | `callback`  | returning `kirby()->roots()->templates()` |
-| dir-partials | `callback`  | returning `kirby()->roots()->templates().'/partials'` |
-| extension-input | `hbs` | |
-| extension-output | `lnc` | hbs compiled to php |
-| queries | `[...]` | an array of predefined queries you can use in your templates |
+| bnomei.handlebars.        | Default    | Description               |            
+|---------------------------|------------|---------------------------|
+| component | `true`     | if `false` no templating will be handled by this plugin and you need to use the `hbs()`/`handlebars()` functions. |
+| dir-templates | `callback` | returning `kirby()->roots()->templates()` |
+| dir-partials | `callback` | returning `kirby()->roots()->templates().'/partials'` |
+| extension-input | `hbs`      | |
+| extension-output | `php`      | hbs compiled to php |
+| queries | `[...]`    | an array of predefined queries you can use in your templates |
 
 ## Dependencies
 
