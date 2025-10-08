@@ -1,291 +1,207 @@
 <?php
 
-require_once __DIR__ . '/../vendor/autoload.php';
+require_once __DIR__.'/../vendor/autoload.php';
 
 use Bnomei\LncFiles;
-use Kirby\Cms\Dir;
-use Kirby\Toolkit\F;
+use Kirby\Filesystem\Dir;
+use Kirby\Filesystem\F;
 use Kirby\Toolkit\Str;
-use LightnCandy\LightnCandy;
-use PHPUnit\Framework\TestCase;
 
-class LncFilesTest extends TestCase
-{
-    public function setUp(): void
-    {
-        $files = new LncFiles();
-        $files->flush();
-    }
+beforeEach(function () {
+    $files = new LncFiles;
+    $files->flush();
+});
+test('construct', function () {
+    $files = new LncFiles([]);
+    expect($files)->toBeInstanceOf(LncFiles::class);
+});
+test('static', function () {
+    $files = LncFiles::singleton();
+    expect($files)->toBeInstanceOf(LncFiles::class);
+});
+test('option', function () {
+    $files = new LncFiles(['debug' => true]);
+    expect($files->option('debug'))->toBeTrue();
 
-    public function testConstruct()
-    {
-        $files = new LncFiles([]);
-        $this->assertInstanceOf(LncFiles::class, $files);
-    }
+    expect($files->option())->toBeArray();
+});
+test('filter dir by extension', function () {
+    $files = new LncFiles;
+    $hbs = $files->filterDirByExtension(
+        (string) $files->option('dir-partials'),
+        (string) $files->option('extension-input')
+    );
+    expect($hbs)->toBeArray();
+    expect($hbs)->toHaveCount(1);
+    $this->assertStringContainsString(
+        '.'.(string) $files->option('extension-input'),
+        $hbs[0]
+    );
+});
+test('compile', function () {
+    $files = LncFiles::singleton();
+    $load = $files->load();
 
-    public function testStatic()
-    {
-        $files = LncFiles::singleton();
-        $this->assertInstanceOf(LncFiles::class, $files);
-    }
-
-    public function testOption()
-    {
-        $files = new LncFiles(['debug' => true]);
-        $this->assertTrue($files->option('debug'));
-
-        $this->assertIsArray($files->option());
-    }
-
-    public function testCompileOptions()
-    {
-        $files = new LncFiles(['compile-flags' => function () {
-            return LightnCandy::FLAG_ELSE;
-        }]);
-        $this->assertCount(2, $files->compileOptions());
-        $this->assertEquals(16777216, $files->compileOptions()['flags']);
-
-        $files = new LncFiles(['compile-flags' => function () {
-            return LightnCandy::FLAG_ELSE | LightnCandy::FLAG_NOESCAPE;
-        }]);
-        $this->assertEquals(83886080, $files->compileOptions()['flags']);
-    }
-
-    public function testFilterDirByExtension()
-    {
-        $files = new LncFiles();
-        $hbs = $files->filterDirByExtension(
-            (string)$files->option('dir-partials'),
-            (string)$files->option('extension-input')
-        );
-        $this->assertIsArray($hbs);
-        $this->assertCount(1, $hbs);
-        $this->assertStringContainsString(
-            '.'.(string)$files->option('extension-input'),
-            $hbs[0]
-        );
-    }
-
-    public function testCompile()
-    {
-        $files = LncFiles::singleton();
-        $load = $files->load();
-
-        foreach ($load as $lncFile) {
-            if ($lncFile->needsUpdate() && !$lncFile->partial()) {
-                $h = $lncFile->hbs();
-                if (Str::contains($h, '{{>')) {
-                    continue;
-                }
-
-//                $this->assertTrue($h);
-                $php = $files->compile($lncFile);
-                $this->assertStringStartsWith('use \LightnCandy\Runtime as LR;', $php);
-                $lncFile->php($php);
+    foreach ($load as $lncFile) {
+        if ($lncFile->needsUpdate() && ! $lncFile->partial()) {
+            $h = $lncFile->hbs();
+            if (Str::contains($h, '{{>')) {
+                continue;
             }
+
+            //                $this->assertTrue($h);
+            $php = $files->compile($lncFile);
+            expect($php)->toStartWith('<?php ');
         }
     }
+});
+test('load', function () {
+    $files = new LncFiles;
+    expect($files->option('files'))->toBeTrue();
 
-    public function testLoad()
-    {
-        $files = new LncFiles();
-        $this->assertTrue($files->option('files'));
+    $scan = $files->load();
+    expect($scan)->toBeArray();
+    expect($scan)->toHaveCount(5);
+});
+test('write', function () {
+    $files = new LncFiles;
+    expect($files->option('files'))->toBeTrue();
+    $scan = $files->load();
+    expect($files->write($scan))->toBeTrue();
 
-        $scan = $files->load();
-        $this->assertIsArray($scan);
-        $this->assertCount(5, $scan);
-    }
+    $files = new LncFiles([
+        'files' => false,
+    ]);
+    expect($files->option('files'))->toBeFalse();
+    $scan = $files->load();
+    expect($files->write($scan))->toBeFalse();
+});
+test('load from cache', function () {
+    $files = new LncFiles;
+    expect($files->option('files'))->toBeTrue();
 
-    public function testWrite()
-    {
-        $files = new LncFiles();
-        $this->assertTrue($files->option('files'));
-        $scan = $files->load();
-        $this->assertTrue($files->write($scan));
+    $files->write($files->load());
+    $files->load();
+});
+test('flush', function () {
+    $files = new LncFiles;
+    F::write($files->lncCacheRoot().'/test.tmp', 'test');
+    $files->flush();
+    expect(count(Dir::files($files->lncCacheRoot())) === 0)->toBeTrue();
+});
+test('modified', function () {
+    $files = new LncFiles;
+    expect(count(Dir::files($files->option('dir-partials'))))->toEqual(2);
 
-        $files = new LncFiles([
-            'files' => false,
-        ]);
-        $this->assertFalse($files->option('files'));
-        $scan = $files->load();
-        $this->assertFalse($files->write($scan));
-    }
+    $modified = $files->modified(
+        $files->filterDirByExtension(
+            (string) $files->option('dir-partials'),
+            (string) $files->option('extension-input')
+        )
+    );
+    expect($modified)->toBeString();
 
-    public function testLoadFromCache()
-    {
-        $files = new LncFiles();
-        $this->assertTrue($files->option('files'));
+    $hbsModified = F::modified($files->option('dir-partials').'/piece-of-cake.hbs');
+    expect(hash('xxh3', implode(['LncFilesSalt', $hbsModified])))->toEqual($modified);
+});
+test('hbs of partial', function () {
+    $files = new LncFiles([
+        'debug' => true,
+    ]);
+    $files->registerAllTemplates();
 
-        $files->write($files->load());
-        $files->load();
-    }
+    expect($files->hbsOfPartial('piece-of-cake'))->toEqual(F::read($files->option('dir-partials').'/piece-of-cake.hbs'));
 
-    public function testFlush()
-    {
-        $files = new LncFiles();
-        F::write($files->lncCacheRoot() . '/test.tmp', 'test');
-        $files->flush();
-        $this->assertTrue(count(Dir::files($files->lncCacheRoot())) === 0);
-    }
+    expect($files->hbsOfPartial('does-not-exist'))->toEqual('');
+});
+test('lnc file', function () {
+    $files = new LncFiles([
+        'debug' => true,
+    ]);
+    $files->registerAllTemplates();
 
-    public function testModified()
-    {
-        $files = new LncFiles();
-        $this->assertEquals(2, count(Dir::files($files->option('dir-partials'))));
+    expect($files->lncFile('render-unto'))->toEqual($files->lncCacheRoot().'/render-unto.'.$files->option('extension-output'));
 
-        $modified = $files->modified(
-            $files->filterDirByExtension(
-                (string)$files->option('dir-partials'),
-                (string)$files->option('extension-input')
-            )
-        );
-        $this->assertIsString($modified);
+    expect($files->lncFile('does-not-exist'))->toEqual($files->lncCacheRoot().'/default.'.$files->option('extension-output'));
+});
+test('hbs file', function () {
+    $files = new LncFiles([
+        'debug' => true,
+    ]);
+    $files->registerAllTemplates();
 
-        $hbsModified = F::modified($files->option('dir-partials') . '/piece-of-cake.hbs');
-        $this->assertEquals($modified, strval(crc32(implode(['LncFilesSalt', $hbsModified]))));
-    }
+    expect($files->hbsFile('render-unto'))->toEqual(kirby()->roots()->templates().'/render-unto.'.$files->option('extension-input'));
 
-    public function testHbsOfPartial()
-    {
-        $files = new LncFiles([
-            'debug' => true,
-        ]);
-        $files->registerAllTemplates();
+    expect($files->hbsFile('does-not-exist'))->toEqual(kirby()->roots()->templates().'/default.'.$files->option('extension-input'));
+});
+test('precompiled template', function () {
+    $files = LncFiles::singleton();
+    $files->registerAllTemplates();
 
-        $this->assertEquals(
-            F::read($files->option('dir-partials') . '/piece-of-cake.hbs'),
-            $files->hbsOfPartial('piece-of-cake')
-        );
+    expect($files->precompiledTemplate('default'))->toBeInstanceOf(Closure::class);
 
-        $this->assertEquals(
-            '',
-            $files->hbsOfPartial('does-not-exist')
-        );
-    }
+    expect(
+        // default template
+        $files->precompiledTemplate('doesnotexist')
+    )->toBeInstanceOf(Closure::class);
+});
+test('register all templates', function () {
+    $files = new LncFiles;
+    $files->registerAllTemplates();
+    expect($files->files())->toBeArray();
+    expect($files->files())->toHaveCount(5);
 
-    public function testLncFile()
-    {
-        $files = new LncFiles([
-            'debug' => true,
-        ]);
-        $files->registerAllTemplates();
+    // $this->assertTrue($files->files());
+    // TODO: checks
+});
+test('lnc cache root', function () {
+    $files = new LncFiles;
+    expect($files->lncCacheRoot())->toMatch("/.*\/site\/cache\/.*\/bnomei\/handlebars/");
+});
+test('target', function () {
+    $files = new LncFiles;
+    expect($files->target('default'))->toEqual($files->lncCacheRoot().'/default.'.$files->option('extension-output'));
 
-        $this->assertEquals(
-            $files->lncCacheRoot() . '/render-unto.' . $files->option('extension-output'),
-            $files->lncFile('render-unto')
-        );
+    expect($files->target('piece-of-cake', true))->toEqual($files->lncCacheRoot().'/@piece-of-cake.'.$files->option('extension-output'));
+});
+test('writes only once', function () {
+    $singleton = LncFiles::singleton();
+    $hbsFileOfDefault = $singleton->hbsFile('default');
+    $lncFileOfDefault = $singleton->lncFile('default');
+    $options = $singleton->options();
+    expect($options['lnc'])->toBeTrue();
+    $singleton->flush();
+    $this->assertFileDoesNotExist($singleton->lncFile('default'));
 
-        $this->assertEquals(
-            $files->lncCacheRoot() . '/default.' . $files->option('extension-output'),
-            $files->lncFile('does-not-exist')
-        );
-    }
+    // simulate request #1, will write files
+    // var_dump('#1');
+    $files = new LncFiles($options);
+    expect($files->files())->toHaveCount(0);
+    $this->assertFileDoesNotExist($lncFileOfDefault);
+    $files->registerAllTemplates();
+    expect($files->lncFile('default'))->toBeFile();
+    expect($files->files())->toHaveCount(5);
 
-    public function testHbsFile()
-    {
-        $files = new LncFiles([
-            'debug' => true,
-        ]);
-        $files->registerAllTemplates();
+    $default = $files->precompiledTemplate('default');
+    $modified = F::modified($files->lncFile('default'));
 
-        $this->assertEquals(
-            kirby()->roots()->templates() . '/render-unto.' . $files->option('extension-input'),
-            $files->hbsFile('render-unto')
-        );
+    // simulate request #2, will load and not write
+    sleep(2);
 
-        $this->assertEquals(
-            kirby()->roots()->templates() . '/default.' . $files->option('extension-input'),
-            $files->hbsFile('does-not-exist')
-        );
-    }
+    // make modified check possible
+    // var_dump('#2');
+    $files = new LncFiles($options);
+    $files->registerAllTemplates();
+    expect(Dir::read($files->lncCacheRoot()))->toHaveCount(6);
+    $default = $files->precompiledTemplate('default');
+    expect(F::modified($files->lncFile('default')))->toEqual($modified);
 
-    public function testPrecompiledTemplate()
-    {
-        $files = LncFiles::singleton();
-        $files->registerAllTemplates();
-
-        $this->assertStringStartsWith(
-            'use \LightnCandy\Runtime as LR;',
-            $files->precompiledTemplate('default')
-        );
-
-        $this->assertStringStartsWith(
-            'use \LightnCandy\Runtime as LR;', // default template
-            $files->precompiledTemplate('doesnotexist')
-        );
-    }
-
-    public function testRegisterAllTemplates()
-    {
-        $files = new LncFiles();
-        $files->registerAllTemplates();
-        $this->assertIsArray($files->files());
-        $this->assertCount(5, $files->files());
-
-        // $this->assertTrue($files->files());
-        // TODO: checks
-    }
-
-    public function testLncCacheRoot()
-    {
-        $files = new LncFiles();
-        $this->assertMatchesRegularExpression(
-            "/.*\/site\/cache\/.*\/bnomei\/handlebars/",
-            $files->lncCacheRoot()
-        );
-    }
-
-    public function testTarget()
-    {
-        $files = new LncFiles();
-        $this->assertEquals(
-            $files->lncCacheRoot() . '/default.' . $files->option('extension-output'),
-            $files->target('default')
-        );
-
-        $this->assertEquals(
-            $files->lncCacheRoot() . '/@piece-of-cake.' . $files->option('extension-output'),
-            $files->target('piece-of-cake', true)
-        );
-    }
-
-    public function testWritesOnlyOnce()
-    {
-        $singleton = LncFiles::singleton();
-        $hbsFileOfDefault = $singleton->hbsFile('default');
-        $lncFileOfDefault = $singleton->lncFile('default');
-        $options = $singleton->options();
-        $this->assertTrue($options['lnc']);
-        $singleton->flush();
-        $this->assertFileDoesNotExist($singleton->lncFile('default'));
-
-        // simulate request #1, will write files
-        //var_dump('#1');
-        $files = new LncFiles($options);
-        $this->assertCount(0, $files->files());
-        $this->assertFileDoesNotExist($lncFileOfDefault);
-        $files->registerAllTemplates();
-        $this->assertFileExists($files->lncFile('default'));
-        $this->assertCount(5, $files->files());
-
-        $default = $files->precompiledTemplate('default');
-        $modified = F::modified($files->lncFile('default'));
-
-        // simulate request #2, will load and not write
-        sleep(2); // make modified check possible
-        //var_dump('#2');
-        $files = new LncFiles($options);
-        $files->registerAllTemplates();
-        $this->assertCount(7, Dir::read($files->lncCacheRoot()));
-        $default = $files->precompiledTemplate('default');
-        $this->assertEquals($modified, F::modified($files->lncFile('default')));
-
-        // simulate request #3, but hbs file changed so will write again
-        //var_dump('#3');
-        F::write($hbsFileOfDefault, F::read($hbsFileOfDefault));
-        sleep(2); // make modified check possible
-        $files = new LncFiles($options);
-        $files->registerAllTemplates();
-        $this->assertNotEquals($modified, F::modified($files->lncFile('default')));
-    }
-}
+    // simulate request #3, but hbs file changed so will write again
+    // var_dump('#3');
+    F::write($hbsFileOfDefault, F::read($hbsFileOfDefault));
+    sleep(2);
+    // make modified check possible
+    $files = new LncFiles($options);
+    $files->registerAllTemplates();
+    $this->assertNotEquals($modified, F::modified($files->lncFile('default')));
+});

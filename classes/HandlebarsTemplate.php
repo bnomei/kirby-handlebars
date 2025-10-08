@@ -4,58 +4,42 @@ declare(strict_types=1);
 
 namespace Bnomei;
 
-use Kirby\Cms\Template;
+use Kirby\Template\Template;
 
 final class HandlebarsTemplate extends Template
 {
-    /*
-     * @var \Bnomei\Handlebars
-     */
-    private $handlebars;
+    private Handlebars $handlebars;
 
     /**
      * HandlebarsTemplate constructor.
-     * @param string $name
-     * @param string $type
-     * @param string $defaultType
      */
     public function __construct(string $name, string $type = 'html', string $defaultType = 'html')
     {
-        $this->handlebars = new Handlebars();
+        $this->handlebars = new Handlebars;
 
         parent::__construct($name, $type, $defaultType);
     }
 
     /**
-     * @return string
-     *
      * @codeCoverageIgnore
      */
     public function extension(): string
     {
-        return option('bnomei.handlebars.extension-input');
+        return strval(option('bnomei.handlebars.extension-input'));
     }
 
-    /**
-     * @return string
-     */
     public function file(): string
     {
         $name = $this->name();
-        if (!$this->hasDefaultType()) {
-            $name = $this->name() . '.' . $this->type();
+        if (! $this->hasDefaultType()) {
+            $name = $this->name().'.'.$this->type();
         }
 
-        $file = $this->handlebars->file(
+        return $this->handlebars->file(
             $name
         );
-        return $file;
     }
 
-    /**
-     * @param array $data
-     * @return string
-     */
     public function render(array $data = []): string
     {
         $render = $this->handlebars->render(
@@ -65,6 +49,7 @@ final class HandlebarsTemplate extends Template
             $this->file(),
             true
         );
+
         return strval($render);
     }
 }

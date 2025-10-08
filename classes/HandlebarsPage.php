@@ -4,24 +4,20 @@ declare(strict_types=1);
 
 namespace Bnomei;
 
-use Kirby\Cms\Field;
 use Kirby\Cms\Page;
+use Kirby\Content\Field;
 
 class HandlebarsPage extends Page implements HandlebarsData
 {
-    /** @var array */
-    public static $handlebarsData = [];
+    public static array $handlebarsData = [];
 
     public function handlebarsData(): array
     {
-        if (! is_array(static::$handlebarsData)) {
-            return [];
-        }
-
-        $data = array_flip(array_map(static function ($value) {
-            if (!is_string($value) && is_callable($value)) {
+        $data = array_flip(array_map(static function ($value) { // @phpstan-ignore-line
+            if (! is_string($value) && is_callable($value)) {
                 $value = $value();
             }
+
             return $value ? strval($value) : null;
         }, static::$handlebarsData));
 
@@ -32,6 +28,7 @@ class HandlebarsPage extends Page implements HandlebarsData
             }
             $data[$methodName] = $field;
         }
+
         return $data;
     }
 }

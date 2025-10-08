@@ -7,13 +7,13 @@ namespace Composer\Autoload;
 class ComposerStaticInit38617ec8fdf9b504d9ae6e3ef7dcd450
 {
     public static $prefixLengthsPsr4 = array (
-        'L' => 
-        array (
-            'LightnCandy\\' => 12,
-        ),
         'K' => 
         array (
             'Kirby\\' => 6,
+        ),
+        'D' => 
+        array (
+            'DevTheorem\\Handlebars\\' => 22,
         ),
         'B' => 
         array (
@@ -22,13 +22,13 @@ class ComposerStaticInit38617ec8fdf9b504d9ae6e3ef7dcd450
     );
 
     public static $prefixDirsPsr4 = array (
-        'LightnCandy\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/zordius/lightncandy/src',
-        ),
         'Kirby\\' => 
         array (
             0 => __DIR__ . '/..' . '/getkirby/composer-installer/src',
+        ),
+        'DevTheorem\\Handlebars\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/devtheorem/php-handlebars/src',
         ),
         'Bnomei\\' => 
         array (
@@ -44,23 +44,25 @@ class ComposerStaticInit38617ec8fdf9b504d9ae6e3ef7dcd450
         'Bnomei\\LncFile' => __DIR__ . '/../..' . '/classes/LncFile.php',
         'Bnomei\\LncFiles' => __DIR__ . '/../..' . '/classes/LncFiles.php',
         'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
+        'DevTheorem\\Handlebars\\Compiler' => __DIR__ . '/..' . '/devtheorem/php-handlebars/src/Compiler.php',
+        'DevTheorem\\Handlebars\\Context' => __DIR__ . '/..' . '/devtheorem/php-handlebars/src/Context.php',
+        'DevTheorem\\Handlebars\\Exporter' => __DIR__ . '/..' . '/devtheorem/php-handlebars/src/Exporter.php',
+        'DevTheorem\\Handlebars\\Expression' => __DIR__ . '/..' . '/devtheorem/php-handlebars/src/Expression.php',
+        'DevTheorem\\Handlebars\\Handlebars' => __DIR__ . '/..' . '/devtheorem/php-handlebars/src/Handlebars.php',
+        'DevTheorem\\Handlebars\\HelperOptions' => __DIR__ . '/..' . '/devtheorem/php-handlebars/src/HelperOptions.php',
+        'DevTheorem\\Handlebars\\Options' => __DIR__ . '/..' . '/devtheorem/php-handlebars/src/Options.php',
+        'DevTheorem\\Handlebars\\Parser' => __DIR__ . '/..' . '/devtheorem/php-handlebars/src/Parser.php',
+        'DevTheorem\\Handlebars\\Partial' => __DIR__ . '/..' . '/devtheorem/php-handlebars/src/Partial.php',
+        'DevTheorem\\Handlebars\\Runtime' => __DIR__ . '/..' . '/devtheorem/php-handlebars/src/Runtime.php',
+        'DevTheorem\\Handlebars\\RuntimeContext' => __DIR__ . '/..' . '/devtheorem/php-handlebars/src/RuntimeContext.php',
+        'DevTheorem\\Handlebars\\SafeString' => __DIR__ . '/..' . '/devtheorem/php-handlebars/src/SafeString.php',
+        'DevTheorem\\Handlebars\\StringObject' => __DIR__ . '/..' . '/devtheorem/php-handlebars/src/StringObject.php',
+        'DevTheorem\\Handlebars\\Token' => __DIR__ . '/..' . '/devtheorem/php-handlebars/src/Token.php',
+        'DevTheorem\\Handlebars\\Validator' => __DIR__ . '/..' . '/devtheorem/php-handlebars/src/Validator.php',
         'Kirby\\ComposerInstaller\\CmsInstaller' => __DIR__ . '/..' . '/getkirby/composer-installer/src/ComposerInstaller/CmsInstaller.php',
         'Kirby\\ComposerInstaller\\Installer' => __DIR__ . '/..' . '/getkirby/composer-installer/src/ComposerInstaller/Installer.php',
         'Kirby\\ComposerInstaller\\Plugin' => __DIR__ . '/..' . '/getkirby/composer-installer/src/ComposerInstaller/Plugin.php',
         'Kirby\\ComposerInstaller\\PluginInstaller' => __DIR__ . '/..' . '/getkirby/composer-installer/src/ComposerInstaller/PluginInstaller.php',
-        'LightnCandy\\Compiler' => __DIR__ . '/..' . '/zordius/lightncandy/src/Compiler.php',
-        'LightnCandy\\Context' => __DIR__ . '/..' . '/zordius/lightncandy/src/Context.php',
-        'LightnCandy\\Encoder' => __DIR__ . '/..' . '/zordius/lightncandy/src/Encoder.php',
-        'LightnCandy\\Exporter' => __DIR__ . '/..' . '/zordius/lightncandy/src/Exporter.php',
-        'LightnCandy\\Expression' => __DIR__ . '/..' . '/zordius/lightncandy/src/Expression.php',
-        'LightnCandy\\Flags' => __DIR__ . '/..' . '/zordius/lightncandy/src/Flags.php',
-        'LightnCandy\\LightnCandy' => __DIR__ . '/..' . '/zordius/lightncandy/src/LightnCandy.php',
-        'LightnCandy\\Parser' => __DIR__ . '/..' . '/zordius/lightncandy/src/Parser.php',
-        'LightnCandy\\Partial' => __DIR__ . '/..' . '/zordius/lightncandy/src/Partial.php',
-        'LightnCandy\\Runtime' => __DIR__ . '/..' . '/zordius/lightncandy/src/Runtime.php',
-        'LightnCandy\\SafeString' => __DIR__ . '/..' . '/zordius/lightncandy/src/SafeString.php',
-        'LightnCandy\\Token' => __DIR__ . '/..' . '/zordius/lightncandy/src/Token.php',
-        'LightnCandy\\Validator' => __DIR__ . '/..' . '/zordius/lightncandy/src/Validator.php',
     );
 
     public static function getInitializer(ClassLoader $loader)

@@ -1,5 +1,7 @@
 <?php
 
 return [
-    'debug' => false, // do not change this. tests depend on it.
+    'editor' => 'phpstorm',
+    'debug' => false, // false for caches to stick
+    // 'bnomei.handlebars.component' => false,
 ];

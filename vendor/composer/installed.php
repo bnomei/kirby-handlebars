@@ -1,8 +1,8 @@
 <?php return array(
     'root' => array(
-        'name' => 'bnomei/kirby3-handlebars',
-        'pretty_version' => '4.0.0',
-        'version' => '4.0.0.0',
+        'name' => 'bnomei/kirby-handlebars',
+        'pretty_version' => '5.0.0',
+        'version' => '5.0.0.0',
         'reference' => null,
         'type' => 'kirby-plugin',
         'install_path' => __DIR__ . '/../../',
@@ -10,12 +10,21 @@
         'dev' => false,
     ),
     'versions' => array(
-        'bnomei/kirby3-handlebars' => array(
-            'pretty_version' => '4.0.0',
-            'version' => '4.0.0.0',
+        'bnomei/kirby-handlebars' => array(
+            'pretty_version' => '5.0.0',
+            'version' => '5.0.0.0',
             'reference' => null,
             'type' => 'kirby-plugin',
             'install_path' => __DIR__ . '/../../',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
+        'devtheorem/php-handlebars' => array(
+            'pretty_version' => 'v0.9.8',
+            'version' => '0.9.8.0',
+            'reference' => '79c5a5b64308323731b7e0438ecd92c91152677a',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../devtheorem/php-handlebars',
             'aliases' => array(),
             'dev_requirement' => false,
         ),
@@ -25,15 +34,6 @@
             'reference' => 'c98ece30bfba45be7ce457e1102d1b169d922f3d',
             'type' => 'composer-plugin',
             'install_path' => __DIR__ . '/../getkirby/composer-installer',
-            'aliases' => array(),
-            'dev_requirement' => false,
-        ),
-        'zordius/lightncandy' => array(
-            'pretty_version' => 'v1.2.6',
-            'version' => '1.2.6.0',
-            'reference' => 'b451f73e8b5c73e62e365997ba3c993a0376b72a',
-            'type' => 'library',
-            'install_path' => __DIR__ . '/../zordius/lightncandy',
             'aliases' => array(),
             'dev_requirement' => false,
         ),

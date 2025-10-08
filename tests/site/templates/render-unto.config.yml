@@ -1,8 +1,0 @@
-context:
-  c: Ceasar
-  g: God
-variants:
-  - name: cassia
-    label: Cassia
-    context:
-      c: Cassia

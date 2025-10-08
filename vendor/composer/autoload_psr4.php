@@ -6,7 +6,7 @@ $vendorDir = dirname(__DIR__);
 $baseDir = dirname($vendorDir);
 
 return array(
-    'LightnCandy\\' => array($vendorDir . '/zordius/lightncandy/src'),
     'Kirby\\' => array($vendorDir . '/getkirby/composer-installer/src'),
+    'DevTheorem\\Handlebars\\' => array($vendorDir . '/devtheorem/php-handlebars/src'),
     'Bnomei\\' => array($baseDir . '/classes'),
 );

@@ -1,7 +1,7 @@
 <?php
 
-require_once __DIR__ . '/bootstrap.php';
+require_once __DIR__.'/bootstrap.php';
 
-$kirby = new Kirby();
+$kirby = new Kirby;
 
 echo $kirby->render();

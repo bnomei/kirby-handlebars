@@ -26,7 +26,7 @@ class QueriesPage extends HandlebarsPage
     }
     */
 
-    public static $handlebarsData = [
+    public static array $handlebarsData = [
         'toppings',
         'k3v',
         'indexcount',
@@ -59,7 +59,7 @@ class QueriesPage extends HandlebarsPage
         return "Some field value {{ page.myfield }} at {{ page.date.toDate('c') }}";
     }
 
-    public function kirbytextWithQuery(): \Kirby\Cms\Field
+    public function kirbytextWithQuery(): \Kirby\Content\Field
     {
         return $this->text()->kirbytext();
     }

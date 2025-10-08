@@ -4,77 +4,50 @@ declare(strict_types=1);
 
 namespace Bnomei;
 
+use Closure;
+use Kirby\Filesystem\F;
 use Kirby\Toolkit\A;
-use Kirby\Toolkit\F;
 use Kirby\Toolkit\Str;
 
 final class LncFile
 {
-    /*
-     * @var array
-     */
-    private $data;
+    private array $data;
 
-    /**
-     * LncFile constructor.
-     * @param array $data
-     */
     public function __construct(array $data)
     {
         $this->data = $this->read($data);
     }
 
-    /**
-     * @return string|null
-     */
-    public function source(): ?string
+    public function source(): string
     {
-        return A::get($this->data, 'source');
+        return A::get($this->data, 'source', '');
     }
 
-    /**
-     * @return string|null
-     */
-    public function name(): ?string
+    public function name(): string
     {
-        return A::get($this->data, 'name');
+        return A::get($this->data, 'name', '');
     }
 
-    /**
-     * @return string|null
-     */
-    public function target(): ?string
+    public function target(): string
     {
-        return A::get($this->data, 'target');
+        return A::get($this->data, 'target', '');
     }
 
-    /**
-     * @return bool
-     */
     public function partial(): bool
     {
         return A::get($this->data, 'partial', false);
     }
 
-    /**
-     * @return bool
-     */
     public function needsUpdate(): bool
     {
         return A::get($this->data, 'needsUpdate', false);
     }
 
-    /**
-     * @return int|null
-     */
     public function modified(): ?int
     {
         return A::get($this->data, 'modified');
     }
 
-    /**
-     * @return array
-     */
     public function toArray(): array
     {
         $copy = $this->data;
@@ -84,13 +57,11 @@ final class LncFile
                 unset($copy[$remove]);
             }
         }
+
         return $copy;
     }
 
-    /**
-     * @param array $data
-     */
-    public function read(array $data)
+    public function read(array $data): array
     {
         $source = $data['source'];
         $target = A::get($data, 'target');
@@ -107,66 +78,47 @@ final class LncFile
         return $data;
     }
 
-    public function writePartial()
+    public function writePartial(): bool
     {
         if ($this->partial()) {
             $this->data['needsUpdate'] = false;
-            F::write($this->target(), ''); // touch
+
+            return F::write($this->target(), ''); // touch
         }
+
+        return false;
     }
 
-    /**
-     * @param string|null $php
-     * @return string|null
-     */
-    public function php(string $php = null): ?string
+    public function php(): Closure
     {
-        // lazy loading
-        if ($php === null) {
-            if ($this->target() && A::get($this->data, 'lnc') && F::exists($this->target())) {
-                $php = F::read($this->target());
-                $this->data['php'] = $php;
-                $this->data['needsUpdate'] = false;
-                return $php;
-            }
+        $closure = A::get($this->data, 'php');
+        if ($closure) {
+            return $closure;
         }
 
-        // set
-        if ($php) {
+        if ($this->target() && A::get($this->data, 'lnc') && F::exists($this->target())) {
+            $php = require $this->target();
+
             $this->data['php'] = $php;
+            $this->data['needsUpdate'] = false;
 
-            // write
-            if ($this->target() && A::get($this->data, 'lnc')) {
-                $didWrite = false;
-                while ($didWrite === false) {
-                    try {
-                        F::write($this->target(), $php);
-                    } catch (\Exception $ex) {
-                        //
-                    } finally {
-                        // validate to be 100% sure
-                        $didWrite = F::read($this->target()) === $php;
-                    }
-                }
-                $this->data['needsUpdate'] = false;
-            }
+            return $php;
         }
 
-        return A::get($this->data, 'php');
+        return fn (array $data) => '';
     }
 
-    /**
-     * @return string|null
-     */
-    public function hbs(): ?string
+    public function hbs(): string
     {
         $hbs = A::get($this->data, 'hbs');
 
         // lazy loading
-        if (! $hbs) {
-            if ($this->source() && F::exists($this->source())) {
+        if (! $hbs && $this->source() && F::exists($this->source())) {
+            $hbs = F::read($this->source());
+            if ($hbs === false) {
+                $this->data['hbs'] = '';
+            } else {
                 // fix fractal.build syntax
-                $hbs = F::read($this->source());
                 $hbs = Str::replace($hbs, '{{> @', '{{> ');
                 $hbs = Str::replace($hbs, ' this }}', '}}');
                 $this->data['hbs'] = $hbs;
