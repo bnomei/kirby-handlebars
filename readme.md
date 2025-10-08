@@ -223,7 +223,6 @@ echo $string;
 | bnomei.handlebars.        | Default        | Description               |            
 |---------------------------|----------------|---------------------------|
 | component | `true` | if `false` no templating will be handled by this plugin and you need to use the `hbs()`/`handlebars()` functions. |
-| dir-partials | `callback`  | returning `kirby()->roots()->templates().'/partials'` |
 | dir-templates | `callback`  | returning `kirby()->roots()->templates()` |
 | dir-partials | `callback`  | returning `kirby()->roots()->templates().'/partials'` |
 | extension-input | `hbs` | |
