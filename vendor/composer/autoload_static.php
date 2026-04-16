@@ -7,30 +7,35 @@ namespace Composer\Autoload;
 class ComposerStaticInit38617ec8fdf9b504d9ae6e3ef7dcd450
 {
     public static $prefixLengthsPsr4 = array (
-        'K' => 
+        'K' =>
         array (
             'Kirby\\' => 6,
         ),
-        'D' => 
+        'D' =>
         array (
             'DevTheorem\\Handlebars\\' => 22,
+            'DevTheorem\\HandlebarsParser\\' => 28,
         ),
-        'B' => 
+        'B' =>
         array (
             'Bnomei\\' => 7,
         ),
     );
 
     public static $prefixDirsPsr4 = array (
-        'Kirby\\' => 
+        'Kirby\\' =>
         array (
             0 => __DIR__ . '/..' . '/getkirby/composer-installer/src',
         ),
-        'DevTheorem\\Handlebars\\' => 
+        'DevTheorem\\Handlebars\\' =>
         array (
             0 => __DIR__ . '/..' . '/devtheorem/php-handlebars/src',
         ),
-        'Bnomei\\' => 
+        'DevTheorem\\HandlebarsParser\\' =>
+        array (
+            0 => __DIR__ . '/..' . '/devtheorem/php-handlebars-parser/src',
+        ),
+        'Bnomei\\' =>
         array (
             0 => __DIR__ . '/../..' . '/classes',
         ),
@@ -44,21 +49,55 @@ class ComposerStaticInit38617ec8fdf9b504d9ae6e3ef7dcd450
         'Bnomei\\LncFile' => __DIR__ . '/../..' . '/classes/LncFile.php',
         'Bnomei\\LncFiles' => __DIR__ . '/../..' . '/classes/LncFiles.php',
         'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
+        'DevTheorem\\HandlebarsParser\\Ast\\ArrayLiteral' => __DIR__ . '/..' . '/devtheorem/php-handlebars-parser/src/Ast/ArrayLiteral.php',
+        'DevTheorem\\HandlebarsParser\\Ast\\BlockStatement' => __DIR__ . '/..' . '/devtheorem/php-handlebars-parser/src/Ast/BlockStatement.php',
+        'DevTheorem\\HandlebarsParser\\Ast\\BooleanLiteral' => __DIR__ . '/..' . '/devtheorem/php-handlebars-parser/src/Ast/BooleanLiteral.php',
+        'DevTheorem\\HandlebarsParser\\Ast\\CloseBlock' => __DIR__ . '/..' . '/devtheorem/php-handlebars-parser/src/Ast/CloseBlock.php',
+        'DevTheorem\\HandlebarsParser\\Ast\\CommentStatement' => __DIR__ . '/..' . '/devtheorem/php-handlebars-parser/src/Ast/CommentStatement.php',
+        'DevTheorem\\HandlebarsParser\\Ast\\ContentStatement' => __DIR__ . '/..' . '/devtheorem/php-handlebars-parser/src/Ast/ContentStatement.php',
+        'DevTheorem\\HandlebarsParser\\Ast\\Decorator' => __DIR__ . '/..' . '/devtheorem/php-handlebars-parser/src/Ast/Decorator.php',
+        'DevTheorem\\HandlebarsParser\\Ast\\Expression' => __DIR__ . '/..' . '/devtheorem/php-handlebars-parser/src/Ast/Expression.php',
+        'DevTheorem\\HandlebarsParser\\Ast\\Hash' => __DIR__ . '/..' . '/devtheorem/php-handlebars-parser/src/Ast/Hash.php',
+        'DevTheorem\\HandlebarsParser\\Ast\\HashPair' => __DIR__ . '/..' . '/devtheorem/php-handlebars-parser/src/Ast/HashPair.php',
+        'DevTheorem\\HandlebarsParser\\Ast\\InverseChain' => __DIR__ . '/..' . '/devtheorem/php-handlebars-parser/src/Ast/InverseChain.php',
+        'DevTheorem\\HandlebarsParser\\Ast\\Literal' => __DIR__ . '/..' . '/devtheorem/php-handlebars-parser/src/Ast/Literal.php',
+        'DevTheorem\\HandlebarsParser\\Ast\\MustacheStatement' => __DIR__ . '/..' . '/devtheorem/php-handlebars-parser/src/Ast/MustacheStatement.php',
+        'DevTheorem\\HandlebarsParser\\Ast\\Node' => __DIR__ . '/..' . '/devtheorem/php-handlebars-parser/src/Ast/Node.php',
+        'DevTheorem\\HandlebarsParser\\Ast\\NullLiteral' => __DIR__ . '/..' . '/devtheorem/php-handlebars-parser/src/Ast/NullLiteral.php',
+        'DevTheorem\\HandlebarsParser\\Ast\\NumberLiteral' => __DIR__ . '/..' . '/devtheorem/php-handlebars-parser/src/Ast/NumberLiteral.php',
+        'DevTheorem\\HandlebarsParser\\Ast\\OpenBlock' => __DIR__ . '/..' . '/devtheorem/php-handlebars-parser/src/Ast/OpenBlock.php',
+        'DevTheorem\\HandlebarsParser\\Ast\\OpenHelper' => __DIR__ . '/..' . '/devtheorem/php-handlebars-parser/src/Ast/OpenHelper.php',
+        'DevTheorem\\HandlebarsParser\\Ast\\OpenPartialBlock' => __DIR__ . '/..' . '/devtheorem/php-handlebars-parser/src/Ast/OpenPartialBlock.php',
+        'DevTheorem\\HandlebarsParser\\Ast\\PartialBlockStatement' => __DIR__ . '/..' . '/devtheorem/php-handlebars-parser/src/Ast/PartialBlockStatement.php',
+        'DevTheorem\\HandlebarsParser\\Ast\\PartialStatement' => __DIR__ . '/..' . '/devtheorem/php-handlebars-parser/src/Ast/PartialStatement.php',
+        'DevTheorem\\HandlebarsParser\\Ast\\PathExpression' => __DIR__ . '/..' . '/devtheorem/php-handlebars-parser/src/Ast/PathExpression.php',
+        'DevTheorem\\HandlebarsParser\\Ast\\PathSegment' => __DIR__ . '/..' . '/devtheorem/php-handlebars-parser/src/Ast/PathSegment.php',
+        'DevTheorem\\HandlebarsParser\\Ast\\Position' => __DIR__ . '/..' . '/devtheorem/php-handlebars-parser/src/Ast/Position.php',
+        'DevTheorem\\HandlebarsParser\\Ast\\Program' => __DIR__ . '/..' . '/devtheorem/php-handlebars-parser/src/Ast/Program.php',
+        'DevTheorem\\HandlebarsParser\\Ast\\SourceLocation' => __DIR__ . '/..' . '/devtheorem/php-handlebars-parser/src/Ast/SourceLocation.php',
+        'DevTheorem\\HandlebarsParser\\Ast\\Statement' => __DIR__ . '/..' . '/devtheorem/php-handlebars-parser/src/Ast/Statement.php',
+        'DevTheorem\\HandlebarsParser\\Ast\\StringLiteral' => __DIR__ . '/..' . '/devtheorem/php-handlebars-parser/src/Ast/StringLiteral.php',
+        'DevTheorem\\HandlebarsParser\\Ast\\StripFlags' => __DIR__ . '/..' . '/devtheorem/php-handlebars-parser/src/Ast/StripFlags.php',
+        'DevTheorem\\HandlebarsParser\\Ast\\SubExpression' => __DIR__ . '/..' . '/devtheorem/php-handlebars-parser/src/Ast/SubExpression.php',
+        'DevTheorem\\HandlebarsParser\\Ast\\UndefinedLiteral' => __DIR__ . '/..' . '/devtheorem/php-handlebars-parser/src/Ast/UndefinedLiteral.php',
+        'DevTheorem\\HandlebarsParser\\ErrorContext' => __DIR__ . '/..' . '/devtheorem/php-handlebars-parser/src/ErrorContext.php',
+        'DevTheorem\\HandlebarsParser\\Lexer' => __DIR__ . '/..' . '/devtheorem/php-handlebars-parser/src/Lexer.php',
+        'DevTheorem\\HandlebarsParser\\Parser' => __DIR__ . '/..' . '/devtheorem/php-handlebars-parser/src/Parser.php',
+        'DevTheorem\\HandlebarsParser\\ParserAbstract' => __DIR__ . '/..' . '/devtheorem/php-handlebars-parser/src/ParserAbstract.php',
+        'DevTheorem\\HandlebarsParser\\ParserFactory' => __DIR__ . '/..' . '/devtheorem/php-handlebars-parser/src/ParserFactory.php',
+        'DevTheorem\\HandlebarsParser\\Phlexer\\Phlexer' => __DIR__ . '/..' . '/devtheorem/php-handlebars-parser/src/Phlexer/Phlexer.php',
+        'DevTheorem\\HandlebarsParser\\Phlexer\\Rule' => __DIR__ . '/..' . '/devtheorem/php-handlebars-parser/src/Phlexer/Rule.php',
+        'DevTheorem\\HandlebarsParser\\Phlexer\\Token' => __DIR__ . '/..' . '/devtheorem/php-handlebars-parser/src/Phlexer/Token.php',
+        'DevTheorem\\HandlebarsParser\\StripInfo' => __DIR__ . '/..' . '/devtheorem/php-handlebars-parser/src/StripInfo.php',
+        'DevTheorem\\HandlebarsParser\\WhitespaceControl' => __DIR__ . '/..' . '/devtheorem/php-handlebars-parser/src/WhitespaceControl.php',
         'DevTheorem\\Handlebars\\Compiler' => __DIR__ . '/..' . '/devtheorem/php-handlebars/src/Compiler.php',
         'DevTheorem\\Handlebars\\Context' => __DIR__ . '/..' . '/devtheorem/php-handlebars/src/Context.php',
-        'DevTheorem\\Handlebars\\Exporter' => __DIR__ . '/..' . '/devtheorem/php-handlebars/src/Exporter.php',
-        'DevTheorem\\Handlebars\\Expression' => __DIR__ . '/..' . '/devtheorem/php-handlebars/src/Expression.php',
         'DevTheorem\\Handlebars\\Handlebars' => __DIR__ . '/..' . '/devtheorem/php-handlebars/src/Handlebars.php',
         'DevTheorem\\Handlebars\\HelperOptions' => __DIR__ . '/..' . '/devtheorem/php-handlebars/src/HelperOptions.php',
         'DevTheorem\\Handlebars\\Options' => __DIR__ . '/..' . '/devtheorem/php-handlebars/src/Options.php',
-        'DevTheorem\\Handlebars\\Parser' => __DIR__ . '/..' . '/devtheorem/php-handlebars/src/Parser.php',
-        'DevTheorem\\Handlebars\\Partial' => __DIR__ . '/..' . '/devtheorem/php-handlebars/src/Partial.php',
         'DevTheorem\\Handlebars\\Runtime' => __DIR__ . '/..' . '/devtheorem/php-handlebars/src/Runtime.php',
         'DevTheorem\\Handlebars\\RuntimeContext' => __DIR__ . '/..' . '/devtheorem/php-handlebars/src/RuntimeContext.php',
         'DevTheorem\\Handlebars\\SafeString' => __DIR__ . '/..' . '/devtheorem/php-handlebars/src/SafeString.php',
-        'DevTheorem\\Handlebars\\StringObject' => __DIR__ . '/..' . '/devtheorem/php-handlebars/src/StringObject.php',
-        'DevTheorem\\Handlebars\\Token' => __DIR__ . '/..' . '/devtheorem/php-handlebars/src/Token.php',
-        'DevTheorem\\Handlebars\\Validator' => __DIR__ . '/..' . '/devtheorem/php-handlebars/src/Validator.php',
         'Kirby\\ComposerInstaller\\CmsInstaller' => __DIR__ . '/..' . '/getkirby/composer-installer/src/ComposerInstaller/CmsInstaller.php',
         'Kirby\\ComposerInstaller\\Installer' => __DIR__ . '/..' . '/getkirby/composer-installer/src/ComposerInstaller/Installer.php',
         'Kirby\\ComposerInstaller\\Plugin' => __DIR__ . '/..' . '/getkirby/composer-installer/src/ComposerInstaller/Plugin.php',

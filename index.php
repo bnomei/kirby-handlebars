@@ -1,6 +1,8 @@
 <?php
 
 use Bnomei\Handlebars;
+use Bnomei\HandlebarsTemplate;
+use Kirby\Cms\App;
 use Kirby\Template\Template;
 
 @include_once __DIR__.'/vendor/autoload.php';
@@ -45,9 +47,9 @@ Kirby::plugin('bnomei/handlebars', [
         ],
     ],
     'components' => [
-        'template' => function (Kirby\Cms\App $kirby, string $name, string $type = 'html', string $defaultType = 'html') {
+        'template' => function (App $kirby, string $name, string $type = 'html', string $defaultType = 'html') {
             if (option('bnomei.handlebars.component')) {
-                return new Bnomei\HandlebarsTemplate($name, $type);
+                return new HandlebarsTemplate($name, $type);
             }
 
             return new Template($name, $type);

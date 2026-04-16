@@ -2,24 +2,26 @@
 
 namespace DevTheorem\Handlebars;
 
+use Closure;
+
 /**
  * @internal
  */
-class RuntimeContext
+final class RuntimeContext
 {
     /**
-     * @param array<string, callable> $helpers
-     * @param array<string, string> $partials
-     * @param array<mixed> $scopes
-     * @param array<mixed> $spVars
-     * @param array<mixed> $blParam
+     * @param array<string, Closure> $helpers
+     * @param array<string, Closure> $partials compile-time and helper-registered partials (persistent)
+     * @param array<string, Closure> $inlinePartials block-scoped {{#* inline}} partials (reset on fn() return)
+     * @param array<mixed> $depths
+     * @param array<mixed> $data
      */
     public function __construct(
         public array $helpers = [],
         public array $partials = [],
-        public array $scopes = [],
-        public array $spVars = [],
-        public array $blParam = [],
-        public int $partialId = 0,
+        public array $inlinePartials = [],
+        public array $depths = [],
+        public array $data = [],
+        public ?Closure $partialBlock = null,
     ) {}
 }

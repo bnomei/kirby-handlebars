@@ -8,5 +8,6 @@ $baseDir = dirname($vendorDir);
 return array(
     'Kirby\\' => array($vendorDir . '/getkirby/composer-installer/src'),
     'DevTheorem\\Handlebars\\' => array($vendorDir . '/devtheorem/php-handlebars/src'),
+    'DevTheorem\\HandlebarsParser\\' => array($vendorDir . '/devtheorem/php-handlebars-parser/src'),
     'Bnomei\\' => array($baseDir . '/classes'),
 );

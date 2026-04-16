@@ -6,6 +6,7 @@ namespace Bnomei;
 
 use Closure;
 use DevTheorem\Handlebars\Context;
+use DevTheorem\Handlebars\Handlebars;
 use DevTheorem\Handlebars\Options;
 use Exception;
 use Kirby\Exception\InvalidArgumentException;
@@ -154,7 +155,7 @@ final class LncFiles
 
     public function compile(LncFile $lncFile): string
     {
-        return '<?php '.\DevTheorem\Handlebars\Handlebars::precompile(
+        return '<?php '.Handlebars::precompile(
             $lncFile->hbs(),
             new Options(
                 partialResolver: function (Context $context, string $name) {

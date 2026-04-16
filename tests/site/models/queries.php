@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Bnomei\HandlebarsPage;
+use Kirby\Content\Field;
 
 class QueriesPage extends HandlebarsPage
 {
@@ -59,7 +60,7 @@ class QueriesPage extends HandlebarsPage
         return "Some field value {{ page.myfield }} at {{ page.date.toDate('c') }}";
     }
 
-    public function kirbytextWithQuery(): \Kirby\Content\Field
+    public function kirbytextWithQuery(): Field
     {
         return $this->text()->kirbytext();
     }

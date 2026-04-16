@@ -1,7 +1,7 @@
 {
   "name": "bnomei/kirby-handlebars",
   "type": "kirby-plugin",
-  "version": "5.0.0",
+  "version": "5.1.0",
   "license": "MIT",
   "description": "Kirby Component for semantic templates with Handlebars and Mustache",
   "authors": [
@@ -46,8 +46,8 @@
   },
   "require": {
     "php": ">=8.2",
-    "getkirby/composer-installer": "^1.2",
-    "devtheorem/php-handlebars": "^v0.9.8"
+    "devtheorem/php-handlebars": "^1.2",
+    "getkirby/composer-installer": "^1.2"
   },
   "require-dev": {
     "getkirby/cms": "^5.0.0",

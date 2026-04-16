@@ -1,8 +1,8 @@
 <?php return array(
     'root' => array(
         'name' => 'bnomei/kirby-handlebars',
-        'pretty_version' => '5.0.0',
-        'version' => '5.0.0.0',
+        'pretty_version' => '5.1.0',
+        'version' => '5.1.0.0',
         'reference' => null,
         'type' => 'kirby-plugin',
         'install_path' => __DIR__ . '/../../',
@@ -11,8 +11,8 @@
     ),
     'versions' => array(
         'bnomei/kirby-handlebars' => array(
-            'pretty_version' => '5.0.0',
-            'version' => '5.0.0.0',
+            'pretty_version' => '5.1.0',
+            'version' => '5.1.0.0',
             'reference' => null,
             'type' => 'kirby-plugin',
             'install_path' => __DIR__ . '/../../',
@@ -20,11 +20,20 @@
             'dev_requirement' => false,
         ),
         'devtheorem/php-handlebars' => array(
-            'pretty_version' => 'v0.9.8',
-            'version' => '0.9.8.0',
-            'reference' => '79c5a5b64308323731b7e0438ecd92c91152677a',
+            'pretty_version' => 'v1.2.3',
+            'version' => '1.2.3.0',
+            'reference' => 'cd35774eebb0647b3cc75de245bb2b2d1af9794d',
             'type' => 'library',
             'install_path' => __DIR__ . '/../devtheorem/php-handlebars',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
+        'devtheorem/php-handlebars-parser' => array(
+            'pretty_version' => 'v2.0.0',
+            'version' => '2.0.0.0',
+            'reference' => '18181b672d6345e3406f57b53ba7cae13bb6ae9f',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../devtheorem/php-handlebars-parser',
             'aliases' => array(),
             'dev_requirement' => false,
         ),
