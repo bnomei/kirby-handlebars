@@ -78,9 +78,19 @@ The plugin has a few queries built-in. This allows you to use the queried result
 {{ page.template }}
 ```
 
-### Automatic parsing of queries in all fields
+### Optional parsing of queries in data strings
 
-You can also use queries when providing data from controllers or models. Further more any plain string will be parsed as a query. This allows you to write queries in textarea fields as well.
+By default, plain strings from content, controllers, and models are rendered as literal data. This prevents editable content from executing Kirby Query methods before Handlebars renders.
+
+If all rendered content is trusted, you can re-enable the old behavior:
+
+```php
+return [
+    'bnomei.handlebars.resolve-content-queries' => true,
+];
+```
+
+With this option enabled, strings can contain Kirby Query placeholders:
 
 **/content/blog/unesco-heritage/post.txt**
 ```yaml
@@ -228,6 +238,7 @@ echo $string;
 | extension-input | `hbs`      | |
 | extension-output | `php`      | hbs compiled to php |
 | queries | `[...]`    | an array of predefined queries you can use in your templates |
+| resolve-content-queries | `false` | if `true`, parse Kirby Query placeholders in plain content/controller/model strings |
 
 ## Dependencies
 

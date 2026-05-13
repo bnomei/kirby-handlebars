@@ -25,6 +25,7 @@ Kirby::plugin('bnomei/handlebars', [
 
         'extension-input' => 'hbs', // or 'mustache' etc.
         'extension-output' => 'php', // or 'lnc' etc.
+        'resolve-content-queries' => false,
 
         // ALLOW creation...
         'cache' => true, // to get the root folder

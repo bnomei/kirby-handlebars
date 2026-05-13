@@ -9,8 +9,11 @@ use Exception;
 use Kirby\Cms\Page;
 use Kirby\Content\Field;
 use Kirby\Exception\InvalidArgumentException;
+use Kirby\Query\Query;
 use Kirby\Toolkit\A;
 use Kirby\Toolkit\Str;
+use Stringable;
+use Throwable;
 
 final class Handlebars
 {
@@ -25,6 +28,7 @@ final class Handlebars
             'extension-output' => option('bnomei.handlebars.extension-output'),
             'extension-input' => option('bnomei.handlebars.extension-input'),
             'queries' => option('bnomei.handlebars.queries'),
+            'resolve-content-queries' => option('bnomei.handlebars.resolve-content-queries', false),
         ];
         $this->options = array_merge($defaults, $options);
 
@@ -83,9 +87,44 @@ final class Handlebars
         return $array;
     }
 
-    public function addQueries(array $data): array
+    private function normalizeQueryValue(mixed $value): mixed
     {
-        $separator = '{{ˇ෴ˇ}}';
+        if (is_array($value)) {
+            return array_map(fn ($item) => $this->normalizeQueryValue($item), $value);
+        }
+
+        if ($value instanceof Field) {
+            return $value->value();
+        }
+
+        if ($value instanceof Stringable) {
+            return (string) $value;
+        }
+
+        return $value;
+    }
+
+    private function resolveConfiguredQuery(string $query, array $params): mixed
+    {
+        try {
+            return $this->normalizeQueryValue(Query::factory($query)->resolve($params));
+        } catch (Throwable) {
+            return null;
+        }
+    }
+
+    private function queryData(string $query, mixed $value): array
+    {
+        $result = $value;
+        foreach (array_reverse(explode('.', $query)) as $key) {
+            $result = [$key => $result];
+        }
+
+        return $result;
+    }
+
+    public function addQueries(array $data, array $params = []): array
+    {
         $queries = $this->option('queries');
         if (! is_array($queries)) {
             $queries = [];
@@ -93,14 +132,15 @@ final class Handlebars
 
         // add queries from options
         foreach ($queries as $query) {
-            $result = explode(
-                $separator,
-                str_replace('.', $separator, strval($query)).$separator.'{{'.strval($query).'}}'
+            $query = strval($query);
+            if ($query === '') {
+                continue;
+            }
+
+            $result = $this->queryData(
+                $query,
+                $this->resolveConfiguredQuery($query, $params)
             );
-            // thanks @distantnative and @phm_van_den_Kirby
-            $result = array_reduce(array_reverse($result), function ($acc, $item) {
-                return $acc ? [$item => $acc] : $item;
-            });
             $data = $this->array_merge_recursive($data, $result);
         }
 
@@ -109,13 +149,16 @@ final class Handlebars
 
     public function resolveQueries(array $data, array $params): array
     {
+        $resolveContentQueries = $this->option('resolve-content-queries') === true;
+
         // resolve queries in data
-        return $this->array_map_recursive($data, static function ($value) use ($params) {
-            if (is_a($value, Field::class)) {
-                $value = $value->value();
-            }
+        return $this->array_map_recursive($data, function ($value) use ($params, $resolveContentQueries) {
+            $value = $this->normalizeQueryValue($value);
+
             if (is_string($value) && Str::contains($value, '{{') && Str::contains($value, '}}')) {
-                $value = Str::template($value, $params);
+                if ($resolveContentQueries) {
+                    $value = Str::template($value, $params);
+                }
             }
 
             return $value;
@@ -163,7 +206,7 @@ final class Handlebars
             'page' => A::get($data, 'page'),
         ];
 
-        $data = $this->addQueries($data);
+        $data = $this->addQueries($data, $params);
         $data = $this->modelData($data, $params['page']);
         $data = $this->resolveQueries($data, $params);
         $data = $this->fieldsToValue($data);

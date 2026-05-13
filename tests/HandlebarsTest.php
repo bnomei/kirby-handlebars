@@ -16,7 +16,7 @@ test('construct', function () {
 test('option', function () {
     $hbs = new Handlebars;
     expect($hbs->option())->toBeArray();
-    expect($hbs->option())->toHaveCount(6);
+    expect($hbs->option('resolve-content-queries'))->toBeFalse();
 
     $hbs = new Handlebars([
         'debug' => true,
@@ -43,6 +43,55 @@ test('fields to value', function () {
         'titleFromField' => page('home')->title()->value(),
     ];
     expect($hbs->fieldsToValue($data))->toHaveCount(2);
+});
+test('content queries are not resolved by default', function () {
+    kirby()->impersonate(null);
+
+    $payload = '{{ kirby.impersonate("kirby").id }} {{ kirby.user.id }}';
+    $hbs = new Handlebars([
+        'resolve-content-queries' => false,
+    ]);
+
+    try {
+        $resolved = $hbs->resolveQueries(
+            ['payload' => $payload],
+            [
+                'kirby' => kirby(),
+                'site' => site(),
+                'page' => page('home'),
+            ]
+        );
+
+        expect($resolved['payload'])->toEqual($payload);
+        expect(kirby()->user()?->id())->not->toEqual('kirby');
+    } finally {
+        kirby()->impersonate(null);
+    }
+});
+test('configured queries resolve without parsing content strings', function () {
+    $page = page('home');
+    $payload = '{{ kirby.version }}';
+    $hbs = new Handlebars([
+        'queries' => [
+            'page.title',
+            'page.url',
+        ],
+        'resolve-content-queries' => false,
+    ]);
+    $params = [
+        'kirby' => kirby(),
+        'site' => site(),
+        'page' => $page,
+    ];
+
+    $resolved = $hbs->resolveQueries(
+        $hbs->addQueries(['payload' => $payload, 'page' => $page], $params),
+        $params
+    );
+
+    expect($resolved['payload'])->toEqual($payload);
+    expect($resolved['page']['title'])->toEqual('Home');
+    expect($resolved['page']['url'])->toEqual($page->url());
 });
 test('handlebars', function () {
     $hbs = new Handlebars;
