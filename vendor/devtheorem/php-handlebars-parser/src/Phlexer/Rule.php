@@ -27,7 +27,6 @@ readonly class Rule
     ) {
         $this->startConditions = $startConditions ?: [Phlexer::INITIAL_STATE];
         // Count capturing '(' — those not preceded by '\' and not followed by '?'
-        $count = preg_match_all("/(?<!\\\\)\((?!\?)/", $this->pattern);
-        $this->captureCount = is_int($count) ? $count : 0;
+        $this->captureCount = preg_match_all("/(?<!\\\\)\((?!\?)/", $this->pattern) ?: 0;
     }
 }

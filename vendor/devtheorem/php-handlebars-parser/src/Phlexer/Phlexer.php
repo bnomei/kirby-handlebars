@@ -196,15 +196,12 @@ abstract class Phlexer
 
     private function advancePosition(string $text): void
     {
-        $len = strlen($text);
-
-        for ($i = 0; $i < $len; $i++) {
-            if ($text[$i] === "\n") {
-                $this->line++;
-                $this->column = 0;
-            } else {
-                $this->column++;
-            }
+        $newlines = substr_count($text, "\n");
+        if ($newlines > 0) {
+            $this->line += $newlines;
+            $this->column = strlen($text) - strrpos($text, "\n") - 1;
+        } else {
+            $this->column += strlen($text);
         }
     }
 

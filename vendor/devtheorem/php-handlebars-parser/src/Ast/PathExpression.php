@@ -4,12 +4,14 @@ namespace DevTheorem\HandlebarsParser\Ast;
 
 class PathExpression extends Expression
 {
+    public bool $this;
+
     /**
      * @param string[] $tail
      * @param (string | SubExpression)[] $parts
      */
     public function __construct(
-        public bool $this_,
+        bool $this_,
         public bool $data,
         public int $depth,
         public SubExpression|string $head,
@@ -18,6 +20,7 @@ class PathExpression extends Expression
         public string $original,
         SourceLocation $loc,
     ) {
+        $this->this = $this_;
         parent::__construct('PathExpression', $loc);
     }
 }

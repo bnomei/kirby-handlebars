@@ -38,17 +38,11 @@ class WhitespaceControl
         if ($node instanceof BlockStatement || $node instanceof PartialBlockStatement) {
             return $this->visitBlock($node);
         }
-        if ($node instanceof MustacheStatement) {
+        if ($node instanceof MustacheStatement || $node instanceof CommentStatement || $node instanceof PartialStatement) {
             return new StripInfo(
                 open: $node->strip->open,
                 close: $node->strip->close,
-            );
-        }
-        if ($node instanceof CommentStatement || $node instanceof PartialStatement) {
-            return new StripInfo(
-                open: $node->strip->open,
-                close: $node->strip->close,
-                inlineStandalone: true,
+                inlineStandalone: !$node instanceof MustacheStatement,
             );
         }
 
@@ -72,13 +66,6 @@ class WhitespaceControl
                 continue;
             }
 
-            $prevWS = $this->isPrevWhitespace($body, $i, $isRoot);
-            $nextWS = $this->isNextWhitespace($body, $i, $isRoot);
-
-            $openStandalone = $strip->openStandalone && $prevWS;
-            $closeStandalone = $strip->closeStandalone && $nextWS;
-            $inlineStandalone = $strip->inlineStandalone && $prevWS && $nextWS;
-
             if ($strip->close) {
                 $this->omitRight($body, $i, true);
             }
@@ -86,38 +73,63 @@ class WhitespaceControl
                 $this->omitLeft($body, $i, true);
             }
 
-            if ($doStandalone && $inlineStandalone) {
-                $this->omitRight($body, $i);
+            if ($doStandalone) {
+                $prevWS = ($strip->inlineStandalone || $strip->openStandalone)
+                    && $this->isPrevWhitespace($body, $i, $isRoot);
+                $nextWS = ($strip->inlineStandalone || $strip->closeStandalone)
+                    && $this->isNextWhitespace($body, $i, $isRoot);
 
-                if ($this->omitLeft($body, $i)) {
-                    // If we are on a standalone node, save the indent info for partials
-                    if ($current instanceof PartialStatement) {
-                        $previous = $body[$i - 1];
-                        if (!$previous instanceof ContentStatement) {
-                            throw new \Exception('Previous unexpectedly not a ContentStatement');
+                if ($strip->inlineStandalone && $prevWS && $nextWS) {
+                    $this->omitRight($body, $i);
+
+                    if ($this->omitLeft($body, $i)) {
+                        // If we are on a standalone node, save the indent info for partials
+                        if ($current instanceof PartialStatement) {
+                            $previous = $body[$i - 1];
+                            if (!$previous instanceof ContentStatement) {
+                                throw new \Exception('Previous unexpectedly not a ContentStatement');
+                            }
+
+                            // Pull out the whitespace from the final line
+                            preg_match('/([ \t]+$)/', $previous->original, $m);
+                            $current->indent = $m[1] ?? '';
                         }
-
-                        // Pull out the whitespace from the final line
-                        preg_match('/([ \t]+$)/', $previous->original, $m);
-                        $current->indent = $m[1] ?? '';
                     }
                 }
-            }
-            if ($doStandalone && $openStandalone) {
-                /** @var BlockStatement|PartialBlockStatement $current */
-                $innerBody = ($current->program ?? $current->inverse ?? throw new \Exception('Missing program'))->body;
-                $this->omitRight($innerBody);
+                if ($strip->openStandalone && $prevWS) {
+                    /** @var BlockStatement|PartialBlockStatement $current */
+                    $innerBody = ($current->program ?? $current->inverse ?? throw new \Exception('Missing program'))->body;
+                    $this->omitRight($innerBody);
 
-                // Strip out the previous content node if it's whitespace only
-                $this->omitLeft($body, $i);
-            }
-            if ($doStandalone && $closeStandalone) {
-                // Always strip the next node
-                $this->omitRight($body, $i);
+                    // Strip out the previous content node if it's whitespace only
+                    $this->omitLeft($body, $i);
+                }
+                if ($strip->closeStandalone && $nextWS) {
+                    // Always strip the next node
+                    $this->omitRight($body, $i);
 
-                /** @var BlockStatement|PartialBlockStatement $current */
-                $innerBody = ($current->inverse ?? $current->program)->body;
-                $this->omitLeft($innerBody);
+                    /** @var BlockStatement|PartialBlockStatement $current */
+                    $chainNode = $current instanceof BlockStatement ? $current->inverse : null;
+                    if ($chainNode !== null && $chainNode->chained) {
+                        // For chained else-if blocks, walk the chain and strip trailing indent
+                        // from every terminal body so all execution paths lose the close-tag indent.
+                        while ($chainNode !== null && $chainNode->chained) {
+                            $lastBlock = $chainNode->body[array_key_last($chainNode->body)] ?? null;
+                            if (!$lastBlock instanceof BlockStatement) {
+                                break;
+                            }
+                            if ($lastBlock->program !== null) {
+                                $this->omitLeft($lastBlock->program->body);
+                            }
+                            $chainNode = $lastBlock->inverse;
+                        }
+                        if ($chainNode !== null) {
+                            $this->omitLeft($chainNode->body);
+                        }
+                    } else {
+                        $this->omitLeft(($current->inverse ?? $current->program)->body);
+                    }
+                }
             }
         }
 
@@ -219,15 +231,18 @@ class WhitespaceControl
 
         // Nodes that end with newlines are considered whitespace (but are special-cased for strip operations)
         $prev = $body[$i - 1] ?? null;
-        $sibling = $body[$i - 2] ?? null;
 
         if ($prev === null) {
             return $isRoot;
         }
 
         if ($prev instanceof ContentStatement) {
-            $pattern = ($sibling || !$isRoot) ? '/\r?\n\s*?$/' : '/(^|\r?\n)\s*?$/';
-            return (bool) preg_match($pattern, $prev->original);
+            $trimmed = rtrim($prev->original, " \t");
+            $endsWithNewline = str_ends_with($trimmed, "\n");
+            if (isset($body[$i - 2]) || !$isRoot) {
+                return $endsWithNewline;
+            }
+            return $trimmed === '' || $endsWithNewline;
         }
 
         return false;
@@ -245,15 +260,18 @@ class WhitespaceControl
         }
 
         $next = $body[$i + 1] ?? null;
-        $sibling = $body[$i + 2] ?? null;
 
         if ($next === null) {
             return $isRoot;
         }
 
         if ($next instanceof ContentStatement) {
-            $pattern = ($sibling || !$isRoot) ? '/^\s*?\r?\n/' : '/^\s*?(\r?\n|$)/';
-            return (bool) preg_match($pattern, $next->original);
+            $trimmed = ltrim($next->original, " \t");
+            $startsWithNewline = str_starts_with($trimmed, "\n") || str_starts_with($trimmed, "\r\n");
+            if (isset($body[$i + 2]) || !$isRoot) {
+                return $startsWithNewline;
+            }
+            return $trimmed === '' || $startsWithNewline;
         }
 
         return false;
@@ -282,9 +300,11 @@ class WhitespaceControl
         }
 
         $original = $current->value;
-        $current->value = ($multiple
-            ? preg_replace('/^\s+/', '', $current->value)
-            : preg_replace('/^[ \t]*\r?\n?/', '', $current->value)) ?? '';
+        if ($multiple) {
+            $current->value = ltrim($original);
+        } else {
+            $current->value = preg_replace('/^[ \t]*\r?\n?/', '', $original) ?? '';
+        }
         $current->rightStripped = ($current->value !== $original);
     }
 
@@ -312,9 +332,7 @@ class WhitespaceControl
 
         // We omit the last node if it's whitespace only and not preceded by a non-content node.
         $original = $current->value;
-        $current->value = ($multiple
-            ? preg_replace('/\s+$/', '', $current->value)
-            : preg_replace('/[ \t]+$/', '', $current->value)) ?? '';
+        $current->value = $multiple ? rtrim($original) : rtrim($original, " \t");
         $current->leftStripped = ($current->value !== $original);
 
         return $current->leftStripped;

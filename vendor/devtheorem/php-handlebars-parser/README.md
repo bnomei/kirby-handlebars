@@ -5,7 +5,7 @@ Parse [Handlebars](https://handlebarsjs.com) templates to a spec-compliant AST w
 Implements the same lexical analysis and grammar specification as Handlebars.js, so any template
 which can (or cannot) be parsed by Handlebars.js should parse (or error) the same way here.
 
-> [!NOTE]
+> [!NOTE]  
 > This project is only a parser. To compile Handlebars templates to native PHP for execution,
 > see [PHP Handlebars](https://github.com/devtheorem/php-handlebars), which uses this parser.
 
