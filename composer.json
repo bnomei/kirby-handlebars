@@ -1,7 +1,7 @@
 {
   "name": "bnomei/kirby-handlebars",
   "type": "kirby-plugin",
-  "version": "5.2.0",
+  "version": "6.0.0",
   "license": "MIT",
   "description": "Kirby Component for semantic templates with Handlebars and Mustache",
   "authors": [
@@ -75,6 +75,9 @@
     ]
   },
   "extra": {
-    "kirby-cms-path": "tests/kirby"
+    "kirby-cms-path": "tests/kirby",
+    "kirby": {
+      "compatible": "^5.0 || ^6.0"
+    }
   }
 }

@@ -2,6 +2,7 @@
 
 use Bnomei\Handlebars;
 use Bnomei\HandlebarsTemplate;
+use Bnomei\LncFiles;
 use Kirby\Cms\App;
 use Kirby\Template\Template;
 
@@ -50,10 +51,15 @@ Kirby::plugin('bnomei/handlebars', [
     'components' => [
         'template' => function (App $kirby, string $name, string $type = 'html', string $defaultType = 'html') {
             if (option('bnomei.handlebars.component')) {
-                return new HandlebarsTemplate($name, $type);
+                $target = $type === $defaultType ? $name : $name.'.'.$type;
+                foreach (LncFiles::singleton()->files() as $file) {
+                    if (! $file->partial() && $file->name() === $target) {
+                        return new HandlebarsTemplate($name, $type, $defaultType);
+                    }
+                }
             }
 
-            return new Template($name, $type);
+            return new Template($name, $type, $defaultType);
         },
     ],
     'pageMethods' => [
