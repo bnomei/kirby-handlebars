@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "5c2f0a8363ecd26975d00941b13b151a",
+    "content-hash": "657e82fd78775f20127e046964a87626",
     "packages": [
         {
             "name": "devtheorem/php-handlebars",
