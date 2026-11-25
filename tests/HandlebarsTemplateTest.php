@@ -20,3 +20,8 @@ test('file', function () {
     $hbsT = new HandlebarsTemplate('default');
     expect($hbsT->file())->toEqual(kirby()->roots()->templates().'/default.hbs');
 });
+
+test('the template component does not claim a missing representation', function () {
+    expect(kirby()->template('render-unto')->exists())->toBeTrue()
+        ->and(kirby()->template('render-unto', 'json')->exists())->toBeFalse();
+});
